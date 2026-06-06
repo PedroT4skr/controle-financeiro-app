@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "773818088394",
+    "project_id": "meucontrolefinanceiroapp-4ea03",
+    "storage_bucket": "meucontrolefinanceiroapp-4ea03.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773818088394:android:6ce7abdf32fd7b4c98ad33",
+        "android_client_info": {
+          "package_name": "com.example.controle_financeiro_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhbM_2VlyvkP6za0Icm7ZQsS-MjtVYmHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
