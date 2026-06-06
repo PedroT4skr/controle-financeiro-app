@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../viewmodels/auth_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_provider.dart';
 import 'dashboard_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
+class _RegisterScreenState extends ConsumerState<RegisterScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -95,8 +95,8 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authVM = context.read<AuthViewModel>();
-    final success = await authVM.register(
+    final authNotifier = ref.read(authProvider.notifier);
+    final success = await authNotifier.register(
       _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
@@ -111,9 +111,10 @@ class _RegisterScreenState extends State<RegisterScreen>
         (route) => false,
       );
     } else {
+      final authState = ref.read(authProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authVM.errorMessage ?? 'Erro ao cadastrar'),
+          content: Text(authState.errorMessage ?? 'Erro ao cadastrar'),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -309,13 +310,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                               const SizedBox(height: 28),
 
                               // Botão Cadastrar
-                              Consumer<AuthViewModel>(
-                                builder: (context, authVM, _) {
+                              Consumer(
+                                builder: (context, ref, _) {
+                                  final authState = ref.watch(authProvider);
                                   return SizedBox(
                                     width: double.infinity,
                                     height: 52,
                                     child: FilledButton(
-                                      onPressed: authVM.isLoading
+                                      onPressed: authState.isLoading
                                           ? null
                                           : _handleRegister,
                                       style: FilledButton.styleFrom(
@@ -324,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                               BorderRadius.circular(14),
                                         ),
                                       ),
-                                      child: authVM.isLoading
+                                      child: authState.isLoading
                                           ? const SizedBox(
                                               width: 24,
                                               height: 24,

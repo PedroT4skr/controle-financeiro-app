@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'viewmodels/auth_viewmodel.dart';
-import 'viewmodels/transaction_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'firebase_options.dart';
 import 'views/login_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ControleFinanceiroApp());
+  
+  // Inicialização do Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(
+    const ProviderScope(
+      child: ControleFinanceiroApp(),
+    ),
+  );
 }
 
 class ControleFinanceiroApp extends StatelessWidget {
@@ -14,98 +25,61 @@ class ControleFinanceiroApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => TransactionViewModel()),
-      ],
-      child: MaterialApp(
-        title: 'Controle Financeiro',
-        debugShowCheckedModeBanner: false,
-
-        // ------------------------------------------------------------------
-        // Material Design 3 — Tema Claro
-        // ------------------------------------------------------------------
-        theme: ThemeData(
-          colorSchemeSeed: const Color(0xFF6750A4),
-          useMaterial3: true,
+    return MaterialApp(
+      title: 'Controle Financeiro',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0F3460),
           brightness: Brightness.light,
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        fontFamily: 'Poppins',
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
-          cardTheme: CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          appBarTheme: const AppBarTheme(
-            centerTitle: false,
-            elevation: 0,
-            scrolledUnderElevation: 2,
-          ),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          snackBarTheme: SnackBarThemeData(
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
-
-        // ------------------------------------------------------------------
-        // Material Design 3 — Tema Escuro
-        // ------------------------------------------------------------------
-        darkTheme: ThemeData(
-          colorSchemeSeed: const Color(0xFF6750A4),
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          ),
-          cardTheme: CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          appBarTheme: const AppBarTheme(
-            centerTitle: false,
-            elevation: 0,
-            scrolledUnderElevation: 2,
-          ),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          snackBarTheme: SnackBarThemeData(
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-
-        themeMode: ThemeMode.system,
-        home: const LoginScreen(),
       ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0F3460),
+          brightness: Brightness.dark,
+        ),
+        fontFamily: 'Poppins',
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.system,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+      ],
+      home: const LoginScreen(),
     );
   }
 }

@@ -1,10 +1,10 @@
 # AGENTS.md — Controle Financeiro App
 
 ## Active State
-**Phase:** ✅ Complete — All 8 commits pushed to GitHub.  
-**Repository:** https://github.com/PedroT4skr/controle-financeiro-app  
-**Architecture:** MVVM with Provider state management  
-**Target Platform:** Flutter Web (GitHub Codespaces)
+**Phase:** 🔄 Em Progresso — Refatoração Nível Avançado (Firebase, Riverpod, API Externa, Shimmer UX).
+**Repository:** https://github.com/PedroT4skr/controle-financeiro-app
+**Architecture:** MVI/MVVM Híbrido com Riverpod & Offline-First (Firestore + SQLite)
+**Target Platform:** Flutter Web e Mobile (APK)
 
 ---
 
