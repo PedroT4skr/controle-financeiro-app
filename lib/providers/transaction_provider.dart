@@ -123,18 +123,21 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         type: type,
       );
 
-      // 1. Salva no SQLite
+      // 1. Salva no SQLite (Rápido e garantido)
       await _repo.insertTransaction(newTx);
       
-      // 2. Salva no Firebase
-      await _firestore
+      // 2. Atualiza a UI imediatamente (Offline-first)
+      await _refreshLocalData(userId);
+      
+      // 3. Salva no Firebase em background (não trava a tela se houver erro ou AdBlock)
+      _firestore
           .collection('users')
           .doc(userId)
           .collection('transactions')
           .doc(newTx.id)
-          .set(newTx.toMap());
+          .set(newTx.toMap())
+          .catchError((e) => print('Aviso de sync Firebase (Add): $e'));
 
-      await _refreshLocalData(userId);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -163,16 +166,17 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
 
       // SQLite
       await _repo.updateTransaction(updatedTx);
+      await _refreshLocalData(userId);
       
-      // Firebase
-      await _firestore
+      // Firebase (Background)
+      _firestore
           .collection('users')
           .doc(userId)
           .collection('transactions')
           .doc(transactionId)
-          .update(updatedTx.toMap());
+          .update(updatedTx.toMap())
+          .catchError((e) => print('Aviso de sync Firebase (Update): $e'));
 
-      await _refreshLocalData(userId);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -185,16 +189,17 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     try {
       // SQLite
       await _repo.deleteTransaction(transactionId);
+      await _refreshLocalData(userId);
       
-      // Firebase
-      await _firestore
+      // Firebase (Background)
+      _firestore
           .collection('users')
           .doc(userId)
           .collection('transactions')
           .doc(transactionId)
-          .delete();
+          .delete()
+          .catchError((e) => print('Aviso de sync Firebase (Delete): $e'));
 
-      await _refreshLocalData(userId);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
