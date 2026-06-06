@@ -134,10 +134,10 @@ class _RegisterScreenState extends State<RegisterScreen>
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [
-              theme.colorScheme.tertiary,
-              theme.colorScheme.primary.withOpacity(0.7),
-              theme.colorScheme.primary,
+            colors: const [
+              Color(0xFF0F2027),
+              Color(0xFF203A43),
+              Color(0xFF2C5364),
             ],
           ),
         ),
