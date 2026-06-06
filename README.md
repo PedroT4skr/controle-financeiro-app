@@ -66,4 +66,13 @@ flutter run
 ```bash
 flutter build apk --release
 ```
+
+### 🔐 Credenciais de Acesso para Teste (Avaliador)
+* **E-mail:** `admin@gmail.com`
+* **Senha:** `admin1`
+
+### 🌐 Para rodar na Web via GitHub Codespaces
+```bash
+flutter run -d web-server --web-port 8080 --web-hostname 0.0.0.0
+```
 *O arquivo será gerado no diretório: `build/app/outputs/flutter-apk/app-release.apk`*

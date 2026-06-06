@@ -96,9 +96,14 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
       // Na prática real, aqui compararíamos timestamps.
       // Para fins do projeto, garantimos que todas do firestore estão no local
       for (var doc in snapshot.docs) {
-        final tx = TransactionModel.fromMap(doc.data());
-        // Insert usa db.insert que lida com o ignore se já existir
-        await _repo.insertTransaction(tx);
+        try {
+          final Map<String, Object?> map = Map<String, Object?>.from(doc.data());
+          map['id'] = doc.id; // Garante que nunca teremos ID nulo
+          final tx = TransactionModel.fromMap(map);
+          await _repo.insertTransaction(tx);
+        } catch (e) {
+          print('Erro inserindo doc syncado: $e');
+        }
       }
       await _refreshLocalData(userId);
     } catch (e) {

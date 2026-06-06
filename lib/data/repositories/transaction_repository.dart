@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../models/transaction_model.dart';
 
@@ -12,7 +13,11 @@ class TransactionRepository {
 
   Future<void> insertTransaction(TransactionModel transaction) async {
     final db = await _dbHelper.database;
-    await db.insert('transactions', transaction.toMap());
+    await db.insert(
+      'transactions',
+      transaction.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> updateTransaction(TransactionModel transaction) async {

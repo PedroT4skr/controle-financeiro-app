@@ -16,6 +16,8 @@ jobs:
   build_and_release:
     name: Build APK and Create Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: 📦 Checkout do repositório
