@@ -126,6 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
         height: double.infinity,
