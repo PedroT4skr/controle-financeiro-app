@@ -1,7 +1,7 @@
 # AGENTS.md — Controle Financeiro App
 
 ## Active State
-**Phase:** ✅ Complete — All 6 commits pushed to GitHub.  
+**Phase:** ✅ Complete — All 8 commits pushed to GitHub.  
 **Repository:** https://github.com/PedroT4skr/controle-financeiro-app  
 **Architecture:** MVVM with Provider state management  
 **Target Platform:** Flutter Web (GitHub Codespaces)
@@ -51,8 +51,8 @@ controle-financeiro-app/
 | `pubspec.yaml` | Project manifest with flutter, provider, sqflite, sqflite_common_ffi_web, intl | - |
 | `lib/main.dart` | App bootstrap: MultiProvider, Material3 light/dark themes, LoginScreen route | auth_viewmodel, transaction_viewmodel, login_screen |
 | `lib/data/database/database_helper.dart` | SQLite singleton: platform-adaptive (native vs web FFI), creates users & transactions tables | sqflite, sqflite_common_ffi_web, path |
-| `lib/data/models/user_model.dart` | User entity with fromMap/toMap/copyWith/equality | - |
-| `lib/data/models/transaction_model.dart` | Transaction entity with TransactionType enum, ISO8601 date serialization | - |
+| `lib/data/models/user_model.dart` | User entity with fromMap(`Map<String, Object?>`)/toMap/copyWith/equality — web FFI safe | - |
+| `lib/data/models/transaction_model.dart` | Transaction entity with TransactionType enum, ISO8601 date, `Map<String, Object?>` toMap | - |
 | `lib/data/repositories/user_repository.dart` | User DB operations: insert, authenticate, emailExists, getUserById | database_helper, user_model |
 | `lib/data/repositories/transaction_repository.dart` | Transaction DB ops: insert, update, delete, list by user, balance/income/expenses aggregations | database_helper, transaction_model |
 | `lib/viewmodels/auth_viewmodel.dart` | Auth state: login/register/logout, error/loading state, auto-login post-register | user_repository, user_model |
@@ -74,3 +74,5 @@ controle-financeiro-app/
 | 19:20 | `ed808cd` | `feat: implement login and register screens with form validation` |
 | 21:10 | `7091cc2` | `feat: create dashboard UI, transaction list, and bottom sheets for CRUD` |
 | 21:55 | `6a05991` | `fix: refine UI, ensure Material Design patterns and web support` |
+| 22:05 | `3bd2fde` | `fix: resolve sqflite web type conversion error and add autoincrement` |
+| 22:18 | `59304f2` | `fix: use Map<String, Object?> in toMap() to prevent sqflite web FFI null serialization error` |

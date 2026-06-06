@@ -12,7 +12,7 @@ class UserModel {
   });
 
   /// Deserializa um Map (SQLite row) para UserModel.
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromMap(Map<String, Object?> map) {
     return UserModel(
       id: map['id'] as int?,
       name: map['name'] as String,

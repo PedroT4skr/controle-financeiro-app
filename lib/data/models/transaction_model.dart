@@ -22,7 +22,7 @@ class TransactionModel {
   });
 
   /// Deserializa um Map (SQLite row) para TransactionModel.
-  factory TransactionModel.fromMap(Map<String, dynamic> map) {
+  factory TransactionModel.fromMap(Map<String, Object?> map) {
     return TransactionModel(
       id: map['id'] as int?,
       userId: map['user_id'] as int,

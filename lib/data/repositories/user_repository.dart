@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../models/user_model.dart';
 
@@ -7,13 +6,19 @@ class UserRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   /// Insere um novo usuário e retorna o id gerado.
+  /// Usa rawInsert para evitar o bug do web FFI com ConflictAlgorithm.
   Future<int> insertUser(UserModel user) async {
     final db = await _dbHelper.database;
-    return db.insert(
-      'users',
-      user.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.abort,
+    final map = user.toMap();
+
+    await db.rawInsert(
+      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+      [map['name'], map['email'], map['password']],
     );
+
+    // Recupera o ID manualmente — o web FFI não retorna de forma confiável
+    final result = await db.rawQuery('SELECT last_insert_rowid() as id');
+    return (result.first['id'] as int?) ?? 0;
   }
 
   /// Busca um usuário por email e senha (login).

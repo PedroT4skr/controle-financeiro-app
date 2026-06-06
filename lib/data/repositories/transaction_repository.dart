@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../models/transaction_model.dart';
 
@@ -7,13 +6,18 @@ class TransactionRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   /// Insere uma nova transação e retorna o id gerado.
+  /// Usa rawInsert para evitar o bug do web FFI com ConflictAlgorithm.
   Future<int> insertTransaction(TransactionModel transaction) async {
     final db = await _dbHelper.database;
-    return db.insert(
-      'transactions',
-      transaction.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+    final map = transaction.toMap();
+
+    await db.rawInsert(
+      'INSERT INTO transactions (user_id, title, amount, date, type) VALUES (?, ?, ?, ?, ?)',
+      [map['user_id'], map['title'], map['amount'], map['date'], map['type']],
     );
+
+    final result = await db.rawQuery('SELECT last_insert_rowid() as id');
+    return (result.first['id'] as int?) ?? 0;
   }
 
   /// Atualiza uma transação existente. Retorna a quantidade de linhas afetadas.
