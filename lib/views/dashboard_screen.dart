@@ -22,7 +22,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = ref.read(authProvider).user;
       if (user != null) {
-        ref.read(transactionProvider.notifier).loadTransactions(user.id);
+        ref.read(transactionProvider.notifier).loadTransactions(user.id!);
       }
     });
   }
@@ -130,7 +130,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   final tx = txState.transactions[index];
                   return _TransactionListItem(
                     transaction: tx,
-                    onDelete: () => ref.read(transactionProvider.notifier).deleteTransaction(tx.id!, user.id),
+                    onDelete: () => ref.read(transactionProvider.notifier).deleteTransaction(tx.id!, user.id!),
                   );
                 },
                 childCount: txState.transactions.length,
@@ -140,7 +140,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddTransactionModal(context, user.id),
+        onPressed: () => _showAddTransactionModal(context, user.id!),
         icon: const Icon(Icons.add),
         label: const Text('Nova'),
       ),
@@ -394,7 +394,7 @@ class _TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIncome = transaction.type == TransactionType.income;
+    final isIncome = transaction.type == TransactionType.receita;
     final color = isIncome ? Colors.green : Colors.red;
     final icon = isIncome ? Icons.arrow_downward : Icons.arrow_upward;
     final currencyFormatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
@@ -438,7 +438,7 @@ class _TransactionFormState extends ConsumerState<_TransactionForm> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
-  TransactionType _type = TransactionType.expense;
+  TransactionType _type = TransactionType.despesa;
 
   @override
   Widget build(BuildContext context) {
@@ -455,8 +455,8 @@ class _TransactionFormState extends ConsumerState<_TransactionForm> {
             const SizedBox(height: 16),
             SegmentedButton<TransactionType>(
               segments: const [
-                ButtonSegment(value: TransactionType.expense, label: Text('Despesa')),
-                ButtonSegment(value: TransactionType.income, label: Text('Receita')),
+                ButtonSegment(value: TransactionType.despesa, label: Text('Despesa')),
+                ButtonSegment(value: TransactionType.receita, label: Text('Receita')),
               ],
               selected: {_type},
               onSelectionChanged: (set) => setState(() => _type = set.first),

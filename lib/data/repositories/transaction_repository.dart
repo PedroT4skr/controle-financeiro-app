@@ -10,9 +10,9 @@ import '../models/transaction_model.dart';
 class TransactionRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  Future<int> insertTransaction(TransactionModel transaction) async {
+  Future<void> insertTransaction(TransactionModel transaction) async {
     final db = await _dbHelper.database;
-    return await db.insert('transactions', transaction.toMap());
+    await db.insert('transactions', transaction.toMap());
   }
 
   Future<void> updateTransaction(TransactionModel transaction) async {
@@ -25,12 +25,12 @@ class TransactionRepository {
     );
   }
 
-  Future<void> deleteTransaction(int id) async {
+  Future<void> deleteTransaction(String id) async {
     final db = await _dbHelper.database;
     await db.delete('transactions', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<TransactionModel>> getTransactionsByUser(int userId) async {
+  Future<List<TransactionModel>> getTransactionsByUser(String userId) async {
     final db = await _dbHelper.database;
     final results = await db.query(
       'transactions',
@@ -41,13 +41,13 @@ class TransactionRepository {
     return results.map((map) => TransactionModel.fromMap(map)).toList();
   }
 
-  Future<double> getBalance(int userId) async {
+  Future<double> getTotalBalance(String userId) async {
     final income = await getTotalIncome(userId);
     final expense = await getTotalExpenses(userId);
     return income - expense;
   }
 
-  Future<double> getTotalIncome(int userId) async {
+  Future<double> getTotalIncome(String userId) async {
     final db = await _dbHelper.database;
     final result = await db.rawQuery(
       "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = ? AND type = 'receita'",
@@ -56,7 +56,7 @@ class TransactionRepository {
     return (result.first['total'] as num).toDouble();
   }
 
-  Future<double> getTotalExpenses(int userId) async {
+  Future<double> getTotalExpenses(String userId) async {
     final db = await _dbHelper.database;
     final result = await db.rawQuery(
       "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = ? AND type = 'despesa'",

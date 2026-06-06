@@ -26,8 +26,9 @@ class DatabaseHelper {
       return databaseFactory.openDatabase(
         'controle_financeiro.db',
         options: OpenDatabaseOptions(
-          version: 1,
+          version: 2,
           onCreate: _onCreate,
+          onUpgrade: _onUpgrade,
         ),
       );
     }
@@ -38,8 +39,9 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -47,7 +49,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL
@@ -56,8 +58,8 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE transactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
         title TEXT NOT NULL,
         amount REAL NOT NULL,
         date TEXT NOT NULL,
@@ -70,6 +72,14 @@ class DatabaseHelper {
     await db.execute(
       'CREATE INDEX idx_transactions_user ON transactions(user_id)',
     );
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('DROP TABLE IF EXISTS transactions');
+      await db.execute('DROP TABLE IF EXISTS users');
+      await _onCreate(db, newVersion);
+    }
   }
 
   /// Fecha o banco (útil em testes e teardown).

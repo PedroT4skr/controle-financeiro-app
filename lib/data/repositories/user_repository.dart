@@ -40,7 +40,7 @@ class UserRepository {
     return results.isNotEmpty;
   }
 
-  Future<UserModel?> getUserById(int id) async {
+  Future<UserModel?> getUserById(String id) async {
     final db = await _dbHelper.database;
     final results = await db.query(
       'users',

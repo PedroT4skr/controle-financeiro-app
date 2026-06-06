@@ -5,8 +5,8 @@ enum TransactionType {
 }
 
 class TransactionModel {
-  final int? id;
-  final int userId;
+  final String? id;
+  final String userId;
   final String title;
   final double amount;
   final DateTime date;
@@ -24,8 +24,8 @@ class TransactionModel {
   /// Deserializa um Map (SQLite row) para TransactionModel.
   factory TransactionModel.fromMap(Map<String, Object?> map) {
     return TransactionModel(
-      id: map['id'] as int?,
-      userId: map['user_id'] as int,
+      id: map['id'] as String?,
+      userId: map['user_id'] as String,
       title: map['title'] as String,
       amount: (map['amount'] as num).toDouble(),
       date: DateTime.parse(map['date'] as String),
@@ -55,8 +55,8 @@ class TransactionModel {
 
   /// Cria uma cópia com campos opcionalmente substituídos.
   TransactionModel copyWith({
-    int? id,
-    int? userId,
+    String? id,
+    String? userId,
     String? title,
     double? amount,
     DateTime? date,
