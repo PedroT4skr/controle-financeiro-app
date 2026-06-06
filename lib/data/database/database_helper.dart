@@ -21,8 +21,9 @@ class DatabaseHelper {
   /// Inicializa o banco com a factory correta para cada plataforma.
   Future<Database> _initDatabase() async {
     if (kIsWeb) {
-      // Usa o factory FFI Web para rodar no browser / Codespaces
-      databaseFactory = databaseFactoryFfiWeb;
+      // Usa o factory NoWasm para evitar o bloqueio de SharedArrayBuffer
+      // do GitHub Codespaces (que não envia os headers COOP/COEP)
+      databaseFactory = databaseFactoryFfiWebNoSqlite3Wasm;
       return databaseFactory.openDatabase(
         'controle_financeiro.db',
         options: OpenDatabaseOptions(
