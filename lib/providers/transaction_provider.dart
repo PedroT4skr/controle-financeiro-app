@@ -112,6 +112,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     required double amount,
     required DateTime date,
     required TransactionType type,
+    required String category,
+    required String paymentMethod,
   }) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -121,6 +123,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         amount: amount,
         date: date,
         type: type,
+        category: category,
+        paymentMethod: paymentMethod,
       );
 
       // 1. Salva no SQLite (Rápido e garantido)
@@ -152,6 +156,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     required double amount,
     required DateTime date,
     required TransactionType type,
+    required String category,
+    required String paymentMethod,
   }) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -162,6 +168,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         amount: amount,
         date: date,
         type: type,
+        category: category,
+        paymentMethod: paymentMethod,
       );
 
       // SQLite

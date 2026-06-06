@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import '../data/models/transaction_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
@@ -415,7 +416,13 @@ class _TransactionListItem extends StatelessWidget {
           child: Icon(icon, color: color),
         ),
         title: Text(transaction.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(DateFormat('dd/MM/yyyy').format(transaction.date)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${transaction.category} • ${transaction.paymentMethod}'),
+            Text(DateFormat('dd/MM/yyyy').format(transaction.date), style: const TextStyle(fontSize: 12)),
+          ],
+        ),
         trailing: Text(
           '${isIncome ? '+' : '-'} ${currencyFormatter.format(transaction.amount)}',
           style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
@@ -438,7 +445,19 @@ class _TransactionFormState extends ConsumerState<_TransactionForm> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
+  final CurrencyTextInputFormatter _currencyFormatter = CurrencyTextInputFormatter.currency(
+    locale: 'pt_BR',
+    symbol: 'R\$',
+    decimalDigits: 2,
+  );
+  
   TransactionType _type = TransactionType.despesa;
+  String _category = 'Alimentação';
+  String _paymentMethod = 'Cartão de Crédito';
+
+  final List<String> _expenseCategories = ['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Outros'];
+  final List<String> _incomeCategories = ['Salário', 'Serviço', 'Investimentos', 'Presente', 'Outros'];
+  final List<String> _paymentMethods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'PIX', 'Transferência'];
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +478,12 @@ class _TransactionFormState extends ConsumerState<_TransactionForm> {
                 ButtonSegment(value: TransactionType.receita, label: Text('Receita')),
               ],
               selected: {_type},
-              onSelectionChanged: (set) => setState(() => _type = set.first),
+              onSelectionChanged: (set) {
+                setState(() {
+                  _type = set.first;
+                  _category = _type == TransactionType.despesa ? _expenseCategories.first : _incomeCategories.first;
+                });
+              },
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -472,19 +496,38 @@ class _TransactionFormState extends ConsumerState<_TransactionForm> {
               controller: _amountController,
               decoration: const InputDecoration(labelText: 'Valor'),
               keyboardType: TextInputType.number,
-              validator: (v) => v!.isEmpty ? 'Informe o valor' : null,
+              inputFormatters: [_currencyFormatter],
+              validator: (v) => _currencyFormatter.getUnformattedValue() <= 0 ? 'Informe um valor válido' : null,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _category,
+              decoration: const InputDecoration(labelText: 'Categoria'),
+              items: (_type == TransactionType.despesa ? _expenseCategories : _incomeCategories)
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .toList(),
+              onChanged: (v) => setState(() => _category = v!),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _paymentMethod,
+              decoration: const InputDecoration(labelText: 'Forma de Pagamento'),
+              items: _paymentMethods.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+              onChanged: (v) => setState(() => _paymentMethod = v!),
             ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  final amount = double.parse(_amountController.text.replaceAll(',', '.'));
+                  final amount = _currencyFormatter.getUnformattedValue().toDouble();
                   await ref.read(transactionProvider.notifier).addTransaction(
                     userId: widget.userId,
                     title: _titleController.text,
                     amount: amount,
                     date: DateTime.now(),
                     type: _type,
+                    category: _category,
+                    paymentMethod: _paymentMethod,
                   );
                   if (mounted) Navigator.pop(context);
                 }

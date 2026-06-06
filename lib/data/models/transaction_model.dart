@@ -11,6 +11,8 @@ class TransactionModel {
   final double amount;
   final DateTime date;
   final TransactionType type;
+  final String category;
+  final String paymentMethod;
 
   const TransactionModel({
     this.id,
@@ -19,6 +21,8 @@ class TransactionModel {
     required this.amount,
     required this.date,
     required this.type,
+    required this.category,
+    required this.paymentMethod,
   });
 
   /// Deserializa um Map (SQLite row) para TransactionModel.
@@ -32,6 +36,8 @@ class TransactionModel {
       type: map['type'] == 'receita'
           ? TransactionType.receita
           : TransactionType.despesa,
+      category: (map['category'] as String?) ?? 'Outros',
+      paymentMethod: (map['payment_method'] as String?) ?? 'Dinheiro',
     );
   }
 
@@ -44,6 +50,8 @@ class TransactionModel {
       'amount': amount,
       'date': date.toIso8601String(),
       'type': type == TransactionType.receita ? 'receita' : 'despesa',
+      'category': category,
+      'payment_method': paymentMethod,
     };
 
     if (id != null) {
@@ -61,6 +69,8 @@ class TransactionModel {
     double? amount,
     DateTime? date,
     TransactionType? type,
+    String? category,
+    String? paymentMethod,
   }) {
     return TransactionModel(
       id: id ?? this.id,
@@ -69,6 +79,8 @@ class TransactionModel {
       amount: amount ?? this.amount,
       date: date ?? this.date,
       type: type ?? this.type,
+      category: category ?? this.category,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
     );
   }
 

@@ -26,7 +26,7 @@ class DatabaseHelper {
       return databaseFactory.openDatabase(
         'controle_financeiro.db',
         options: OpenDatabaseOptions(
-          version: 2,
+          version: 3,
           onCreate: _onCreate,
           onUpgrade: _onUpgrade,
         ),
@@ -39,7 +39,7 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -56,7 +56,6 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
       CREATE TABLE transactions (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
@@ -64,6 +63,8 @@ class DatabaseHelper {
         amount REAL NOT NULL,
         date TEXT NOT NULL,
         type TEXT NOT NULL CHECK(type IN ('receita', 'despesa')),
+        category TEXT NOT NULL DEFAULT 'Outros',
+        payment_method TEXT NOT NULL DEFAULT 'Dinheiro',
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     ''');
@@ -75,7 +76,7 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
+    if (oldVersion < 3) {
       await db.execute('DROP TABLE IF EXISTS transactions');
       await db.execute('DROP TABLE IF EXISTS users');
       await _onCreate(db, newVersion);
