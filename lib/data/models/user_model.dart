@@ -22,13 +22,19 @@ class UserModel {
   }
 
   /// Serializa UserModel para Map (inserção no SQLite).
-  Map<String, dynamic> toMap() {
-    return {
-      if (id != null) 'id': id,
+  /// Usa Map<String, Object?> — tipo exato esperado pelo sqflite na web.
+  Map<String, Object?> toMap() {
+    final map = <String, Object?>{
       'name': name,
       'email': email,
       'password': password,
     };
+
+    if (id != null) {
+      map['id'] = id;
+    }
+
+    return map;
   }
 
   /// Cria uma cópia com campos opcionalmente substituídos.

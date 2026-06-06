@@ -36,15 +36,21 @@ class TransactionModel {
   }
 
   /// Serializa TransactionModel para Map (inserção no SQLite).
-  Map<String, dynamic> toMap() {
-    return {
-      if (id != null) 'id': id,
+  /// Usa Map<String, Object?> — tipo exato esperado pelo sqflite na web.
+  Map<String, Object?> toMap() {
+    final map = <String, Object?>{
       'user_id': userId,
       'title': title,
       'amount': amount,
       'date': date.toIso8601String(),
       'type': type == TransactionType.receita ? 'receita' : 'despesa',
     };
+
+    if (id != null) {
+      map['id'] = id;
+    }
+
+    return map;
   }
 
   /// Cria uma cópia com campos opcionalmente substituídos.
