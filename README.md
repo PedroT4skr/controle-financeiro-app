@@ -1,6 +1,5 @@
-# 🚀 Controle Financeiro App - Nível Avançado (16 Pontos)
+# 🚀 Controle Financeiro App - Nível Avançado 
 
-![Controle Financeiro](assets/screenshots/screenshot1.png)
 
 Um aplicativo de gestão financeira premium, desenvolvido em **Flutter**, focado em performance, persistência offline-first e arquitetura limpa. Este projeto atende e excede todos os requisitos do **Projeto Avançado com Persistência e API**.
 
