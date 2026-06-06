@@ -10,59 +10,44 @@ import '../models/user_model.dart';
 class UserRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  /// Insere um novo usuário e retorna o id gerado.
   Future<int> insertUser(UserModel user) async {
     final db = await _dbHelper.database;
-
-    // execute() retorna void — não depende do retorno do FFI bridge
-    await db.execute(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      [user.name, user.email, user.password],
-    );
-
-    // Recupera o ID via SELECT — rawQuery retorna rows, não int
-    final rows = await db.rawQuery('SELECT last_insert_rowid() as id');
-    if (rows.isNotEmpty && rows.first['id'] != null) {
-      return rows.first['id'] as int;
-    }
-    return 0;
+    // Usa o helper padrão agora que o toMap() é seguro para JS FFI
+    return await db.insert('users', user.toMap());
   }
 
-  /// Busca um usuário por email e senha (login).
-  /// Retorna null se as credenciais forem inválidas.
   Future<UserModel?> authenticate(String email, String password) async {
     final db = await _dbHelper.database;
-
-    final results = await db.rawQuery(
-      'SELECT * FROM users WHERE email = ? AND password = ? LIMIT 1',
-      [email, password],
+    final results = await db.query(
+      'users',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+      limit: 1,
     );
-
     if (results.isEmpty) return null;
     return UserModel.fromMap(results.first);
   }
 
-  /// Verifica se já existe um usuário com o email informado.
   Future<bool> emailExists(String email) async {
     final db = await _dbHelper.database;
-
-    final results = await db.rawQuery(
-      'SELECT id FROM users WHERE email = ? LIMIT 1',
-      [email],
+    final results = await db.query(
+      'users',
+      columns: ['id'],
+      where: 'email = ?',
+      whereArgs: [email],
+      limit: 1,
     );
-
     return results.isNotEmpty;
   }
 
-  /// Busca um usuário pelo id.
   Future<UserModel?> getUserById(int id) async {
     final db = await _dbHelper.database;
-
-    final results = await db.rawQuery(
-      'SELECT * FROM users WHERE id = ? LIMIT 1',
-      [id],
+    final results = await db.query(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
     );
-
     if (results.isEmpty) return null;
     return UserModel.fromMap(results.first);
   }
