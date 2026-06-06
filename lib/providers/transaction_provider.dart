@@ -117,7 +117,14 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   }) async {
     state = state.copyWith(isLoading: true);
     try {
+      final docRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('transactions')
+          .doc();
+
       final newTx = TransactionModel(
+        id: docRef.id,
         userId: userId,
         title: title,
         amount: amount,
@@ -134,12 +141,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
       await _refreshLocalData(userId);
       
       // 3. Salva no Firebase em background (não trava a tela se houver erro ou AdBlock)
-      _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('transactions')
-          .doc(newTx.id)
-          .set(newTx.toMap())
+      docRef.set(newTx.toMap())
           .catchError((e) => print('Aviso de sync Firebase (Add): $e'));
 
       return true;

@@ -423,9 +423,22 @@ class _TransactionListItem extends StatelessWidget {
             Text(DateFormat('dd/MM/yyyy').format(transaction.date), style: const TextStyle(fontSize: 12)),
           ],
         ),
-        trailing: Text(
-          '${isIncome ? '+' : '-'} ${currencyFormatter.format(transaction.amount)}',
-          style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${isIncome ? '+' : '-'} ${currencyFormatter.format(transaction.amount)}',
+              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: () {
+                if (transaction.id != null) {
+                  onDelete();
+                }
+              },
+            ),
+          ],
         ),
       ),
     );

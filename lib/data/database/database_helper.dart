@@ -56,6 +56,7 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
       CREATE TABLE transactions (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
